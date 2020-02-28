@@ -1,14 +1,25 @@
-    
-const response = getProductList();
-const listingElement = document.querySelector('#listing');
 
-const products = response.products
-    .map( product => renderProduct(product))
-    .forEach( productHTML => {
-        listingElement.innerHTML += productHTML
-    })
+const productListingElement = document.getElementById('product-listing');
+const searchInputElement = document.getElementById('search-input');
+const searchButtonElement = document.getElementById('search-button');
 
-function parsePrice(price) {
-	if(price.currency === 'PLN') return price.amount.replace(".", ",") + ' PLN'
-	else return price.currency + ' ' + price.amount
+function renderListing(productList) {
+  productListingElement.innerHTML = '';
+
+  productList
+    .map(product => renderProduct(product))
+    .forEach(html => productListingElement.innerHTML += html);
 }
+
+function performSearch() {
+  const phrase = searchInputElement.value;
+  const results = searchByName(phrase, getProductList().products);
+  renderListing(results);
+}
+
+searchInputElement.addEventListener('keypress', (event) => {
+  if (event.key === 'Enter') performSearch();
+});
+searchButtonElement.addEventListener('click', () => performSearch());
+
+renderListing(getProductList().products);
